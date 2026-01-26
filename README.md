@@ -277,27 +277,87 @@ export GITHUB_TOKEN=github_pat_xxx
 
 ---
 
-## 🔹 STEP 0.5 — Install GitHub MCP Server (Local Development)
+## 🔹 STEP 0.5 — Run the Official GitHub MCP Server with Docker (Local Development)
 
-Clone and run the official GitHub MCP Server:
+> ⚠️ **Mandatory step**  
+> This step is required to test the AI agent locally **before Docker/Kubernetes deployment**.
 
-https://github.com/github/github-mcp-server
+In this lab, the Spring Boot application **never calls GitHub REST APIs directly**.  
+All GitHub operations are delegated to the **official GitHub MCP Server**, executed locally **as a Docker container**.
 
-```bash
-git clone https://github.com/github/github-mcp-server.git
-cd github-mcp-server
-npm install
-export GITHUB_TOKEN=github_pat_xxx
-npm start
-```
+---
 
-Validate:
-```bash
-curl http://localhost:3333/mcp -H "Content-Type: application/json" \
- -d '{"jsonrpc":"2.0","id":"1","method":"tools/list","params":{}}'
+## 🧠 Why this step exists
+
+- The AI agent must not handle secrets or side effects directly
+- GitHub access is exposed as **MCP tools**
+- The MCP server:
+  - owns the GitHub token
+  - executes side effects (issue creation)
+  - isolates secrets from the LLM
+
+```text
+Spring Boot (LangChain4j Agent)
+        ↓ MCP (tools/call)
+GitHub MCP Server (Docker / STDIO)
+        ↓
+GitHub REST API
 ```
 
 ---
+
+## 🧰 Official Docker Image
+
+GitHub provides an official MCP server image:
+
+```
+ghcr.io/github/github-mcp-server
+```
+
+This image exposes GitHub features as **MCP tools**.
+
+---
+
+## 🔑 GitHub Authentication
+
+Create a **fine-grained GitHub Personal Access Token** with:
+
+- Repository access: **selected repository**
+- Permissions:
+  - Issues: **Read / Write**
+  - Metadata: **Read**
+
+Export it locally:
+
+```bash
+export GITHUB_PERSONAL_ACCESS_TOKEN="github_pat_xxx"
+```
+
+> ⚠️ This token is used **only by the MCP server**, never by the Spring Boot application.
+
+---
+
+## STEP 0.5 Install + Run the wrapper locally (no Docker yet)
+
+```bash
+cd mcp-github-http-wrapper
+npm install
+export GITHUB_PERSONAL_ACCESS_TOKEN="github_pat_xxx"
+npm start
+```
+
+Expected:
+```
+GitHub MCP HTTP Wrapper listening on http://localhost:3333/mcp
+```
+
+Validation (HTTP works now):
+
+```bash
+curl http://localhost:3333/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"1","method":"tools/list","params":{}}'
+```
 
 # 🔹 STEP 1 — Project Bootstrap with Spring Initializr
 

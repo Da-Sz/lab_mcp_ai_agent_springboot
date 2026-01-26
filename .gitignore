@@ -38,3 +38,6 @@ out/
 /.history
 /.gradle
 /build
+/.idea
+/mcp-github-http-wrapper/node_modules
+/mcp-github-http-wrapper/package-lock.json
