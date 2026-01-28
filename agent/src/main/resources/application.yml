@@ -1,9 +1,9 @@
 github:
-  owner: ${GITHUB_OWNER}
-  repo: ${GITHUB_REPO}
+  owner: ${GITHUB_OWNER:test-owner}
+  repo: ${GITHUB_REPO:test-repo}
 
 anthropic:
-  api-key: ${ANTHROPIC_API_KEY}
+  api-key: ${ANTHROPIC_API_KEY:test-anthropic-key}
   model: claude-opus-4-20250514
   timeout-seconds: 60
 
@@ -13,8 +13,8 @@ openai:
   timeout-seconds: 60
 
 gemini:
-  api-key: ${GEMINI_API_KEY}
-  model: gemini-2.0-flash
+  api-key: ${GEMINI_API_KEY:test-gemini-key}
+  model: gemini-2.5-flash
   timeout-seconds: 60
 
 mcp:
