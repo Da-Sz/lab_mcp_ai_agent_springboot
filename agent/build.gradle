@@ -28,7 +28,8 @@ dependencies {
 
 	// LangChain4j core + Anthropic
 	implementation "dev.langchain4j:langchain4j"
-	implementation "dev.langchain4j:langchain4j-anthropic"
+	implementation "dev.langchain4j:langchain4j-google-ai-gemini"
+	//implementation "dev.langchain4j:langchain4j-anthropic"
 	//implementation "dev.langchain4j:langchain4j-openai"
 
 	// Optional: JDK HTTP client integration
