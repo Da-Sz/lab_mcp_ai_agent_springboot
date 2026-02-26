@@ -1,17 +1,44 @@
 package com.example.agent.tools.github;
 
+import com.example.agent.mcp.McpHttpClient;
 import com.example.agent.tools.AgentTool;
+import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 public class GitHubMcpTools implements AgentTool {
-    @Tool("Retrieves a list of issues from the repository")
-    public String getIssues(String query) {
-        return "List of issues...";
+
+    private final McpHttpClient mcp;
+    private final String owner;
+    private final String repo;
+
+    public GitHubMcpTools(
+            McpHttpClient mcp,
+            @Value("${github.owner}") String owner,
+            @Value("${github.repo}") String repo
+    ) {
+        this.mcp = mcp;
+        this.owner = owner;
+        this.repo = repo;
     }
 
-    @Tool("Creates a new issue in the repository")
-    public void createIssue(String title, String body) {
+    @Tool("Create a GitHub issue in the configured repository. Use when the user asks to create a task/issue.")
+    public String createIssue(
+            @P("Issue title") String title,
+            @P("Issue body in Markdown") String body
+    ) {
+        Map result = (Map) mcp.callTool("issue_write", Map.of(
+                "method", "create",
+                "owner", owner,
+                "repo", repo,
+                "title", title,
+                "body", body
+        )).block();
+
+        return "Issue created successfully: " + result;
     }
 }
