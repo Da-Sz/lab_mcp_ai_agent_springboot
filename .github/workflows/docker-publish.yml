@@ -27,6 +27,8 @@ jobs:
 
       - name: Build & Test
         run: ./gradlew --no-daemon clean test
+        working-directory: agent
+
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
